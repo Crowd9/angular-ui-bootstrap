@@ -327,7 +327,7 @@ angular.module('ui.bootstrap.tooltip', ['ui.bootstrap.position', 'ui.bootstrap.s
 
               tooltipLinkedScope = ttScope.$new();
               tooltip = tooltipLinker(tooltipLinkedScope, function(tooltip) {
-                if (typeof appendToBody === 'string') {
+                if (typeof appendToBody === 'string' && $document.find(appendToBody).length !== 0) {
                   $document.find(appendToBody).append(tooltip);
                 } else if (appendToBody) {
                   $document.find('body').append(tooltip);
