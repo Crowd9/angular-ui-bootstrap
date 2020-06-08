@@ -552,7 +552,7 @@ describe('datepicker', function() {
 
         describe('not to a Date object', function() {
           it('to a Number, it updates calendar', function() {
-            $rootScope.date = parseInt((new Date('November 7, 2005 23:30:00')).getTime(), 10);
+            $rootScope.date = parseInt(new Date('November 7, 2005 23:30:00').getTime(), 10);
             $rootScope.$digest();
             testCalendar();
             expect(angular.isNumber($rootScope.date)).toBe(true);

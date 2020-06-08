@@ -64,29 +64,6 @@ module.exports = function(grunt) {
         dest: '<%= dist %>/<%= filename %>-tpls-<%= pkg.version %>.js'
       }
     },
-    copy: {
-      demohtml: {
-        options: {
-          //process html files with gruntfile config
-          processContent: grunt.template.process
-        },
-        files: [{
-          expand: true,
-          src: ['**/*.html'],
-          cwd: 'misc/demo/',
-          dest: 'dist/'
-        }]
-      },
-      demoassets: {
-        files: [{
-          expand: true,
-          //Don't re-copy html files, we process those
-          src: ['**/**/*', '!**/*.html'],
-          cwd: 'misc/demo',
-          dest: 'dist/'
-        }]
-      }
-    },
     uglify: {
       options: {
         banner: '<%= meta.banner %>'
@@ -187,7 +164,7 @@ module.exports = function(grunt) {
   //register before and after test tasks so we've don't have to change cli
   //options on the google's CI server
   grunt.registerTask('before-test', ['enforce', 'ddescribe-iit', 'eslint', 'html2js']);
-  grunt.registerTask('after-test', ['build', 'copy']);
+  grunt.registerTask('after-test', ['build']);
 
   //Rename our watch task to 'delta', then make actual 'watch'
   //task build things, then start test server
@@ -308,8 +285,8 @@ module.exports = function(grunt) {
     }
 
     var modules = grunt.config('modules');
-    grunt.config('srcModules', _.pluck(modules, 'moduleName'));
-    grunt.config('tplModules', _.pluck(modules, 'tplModules').filter((tpls) => tpls.length > 0));
+    grunt.config('srcModules', _.map(modules, 'moduleName'));
+    grunt.config('tplModules', _.map(modules, 'tplModules').filter((tpls) => tpls.length > 0));
     grunt.config('demoModules', modules
       .filter((module) => module.docs.md && module.docs.js && module.docs.html)
       .sort((a, b) => {
@@ -319,8 +296,8 @@ module.exports = function(grunt) {
       })
     );
 
-    var cssStrings = _.flatten(_.compact(_.pluck(modules, 'css')));
-    var cssJsStrings = _.flatten(_.compact(_.pluck(modules, 'cssJs')));
+    var cssStrings = _.flatten(_.compact(_.map(modules, 'css')));
+    var cssJsStrings = _.flatten(_.compact(_.map(modules, 'cssJs')));
     if (cssStrings.length) {
       grunt.config('meta.cssInclude', cssJsStrings.join('\n'));
 
@@ -335,8 +312,8 @@ module.exports = function(grunt) {
 
     grunt.config('moduleFileMapping', moduleFileMapping);
 
-    var srcFiles = _.pluck(modules, 'srcFiles');
-    var tpljsFiles = _.pluck(modules, 'tpljsFiles');
+    var srcFiles = _.map(modules, 'srcFiles');
+    var tpljsFiles = _.map(modules, 'tpljsFiles');
     //Set the concat task to concatenate the given src modules
     grunt.config('concat.dist.src', grunt.config('concat.dist.src')
                  .concat(srcFiles));
@@ -368,7 +345,7 @@ module.exports = function(grunt) {
     var _ = grunt.util._;
     var moduleMappingJs = 'dist/assets/module-mapping.json';
     var moduleMappings = grunt.config('moduleFileMapping');
-    var moduleMappingsMap = _.object(_.pluck(moduleMappings, 'name'), moduleMappings);
+    var moduleMappingsMap = _.zipObject(_.map(moduleMappings, 'name'), moduleMappings);
     var jsContent = JSON.stringify(moduleMappingsMap);
     grunt.file.write(moduleMappingJs, jsContent);
     grunt.log.writeln('File ' + moduleMappingJs.cyan + ' created.');
